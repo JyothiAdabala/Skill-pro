@@ -1,105 +1,82 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:firstskillpro/styling.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
+import 'UserModel.dart';
 import 'package:http/http.dart' as http;
+import 'package:google_fonts/google_fonts.dart';
 
-import 'faculty/dashboard/CompetencyTable_model.dart';
-
-
-class CompetencyTable extends StatelessWidget {
+class MainT extends StatelessWidget {
   // This widget is the root of your application.
-  const CompetencyTable({Key? key}) : super(key: key);
+  const MainT({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      // title: 'Add Rows',
-      home: CompetencyDetailsTable(),
+    return GetMaterialApp(
+      title: 'Add Rows',
+      home: MainTable(),
     );
   }
 }
 
-class CompetencyDetailsTable extends StatefulWidget {
+Future createUser(String opnum) async {
+  var url = Uri.parse(
+      'https://api421.herokuapp.com/competencyevaluations/competencyid/4/studentid/18pa1a05b7/opnum');
+  final response = await http.post(url, body:jsonEncode({"opnum":opnum,"fmail":"jyothiadabala@gmail.com"}));
+  print("FirstUri");
+  // print('Response status: ${response.statusCode}');
+  // print('Response body: ${response.body}');
+  var data = jsonDecode(response.body);
+}
+
+
+class MainTable extends StatefulWidget {
 
   @override
   _MainTableState createState() => _MainTableState();
 }
+class _MainTableState extends State<MainTable> {
 
-Future<CompetencyTableDetails?> sendData(String opnum) async{
-  var response = await http.post(Uri.parse("https://api421.herokuapp.com/competencyevaluations/competencyid/4/studentid/18pa1a05b7"),
-      headers: <String, String>{
-        'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
-      },
-      body: {"opnum":opnum,"mail":"jyothiadabala321@gmail.com"});
-  var data = response.body;
-  print(data);
 
-  if(response.statusCode == 201){
-    String responseString = response.body;
-    CompetencyTableDetailsFromJson(responseString);
-  }else return null;
-}
+  final TextEditingController opController = TextEditingController();
 
-class _MainTableState extends State<CompetencyDetailsTable> {
-
-  late CompetencyTableDetails? _competencyTableDetails;
-  final OpController = TextEditingController();
   DateTime dateToday =new DateTime.now();
-
-  List<DataRow> _rowList = [];
-
-  void _addRow() {
-    // Built in Flutter Method.
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below.
-      _rowList.add(DataRow(cells: <DataCell>[
-        DataCell(Text(OpController.text)),
-        DataCell(Text(DateFormat('EEE d MMM').format(dateToday))),
-        DataCell(Text(DateFormat.Hms().format(dateToday))),
-        DataCell(Text('2')),
-        DataCell(Text('2')),
-        DataCell(
-          // IconButton(
-          Icon(Icons.delete),
-          // onPressed: _rowList.remove(cnt),
-          // )
-        ),
-      ]));
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: Text("Competency Details"),
-        ),
-        body: Container(
-          padding: EdgeInsets.all(20.0),
-          child: SingleChildScrollView(
-            child: Column(
-              children: <Widget>[
-                TextField(
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),hintText: "Enter Opnum"),
-                    controller : OpController,
-                  ),
-                ElevatedButton(onPressed: () async{
-                  String opnum = OpController.text;
-                  CompetencyTableDetails? data = await sendData(opnum);
-                  setState(() {
-                    _competencyTableDetails = data;
-                  });
 
-                },child: Text("Add"))
-                ]),
-          ),
-          ),
-        );
+    return Scaffold(
+      appBar: AppBar(
+        // Here we take the value from the MyHomePage object that was created by
+        // the App.build method, and use it to set our appbar title.
+        title: Text('Table'),
+      ),
+      body:Column(
+            children: <Widget>[
+              Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Expanded(
+                      child: TextFormField(
+                        controller: opController,
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 20,),
+                    FloatingActionButton.extended(
+                      onPressed: () async{
+                        final String name = opController.text;
+                        createUser(opController.text);
+                        Get.to(()=>DemoTable());
+                        // setState(() {
+                        //   _user = user;
+                        // });
+                      },
+                      label: Text('Add Row'),
+                      backgroundColor: primaryColor,
+                    )]),
+            ]));
   }
 }
-
