@@ -12,22 +12,6 @@ import 'package:firstskillpro/styling.dart';
 import 'package:http/http.dart' as http;
 
 
-Future<List<TableDetails>> fetchTableDetails() async {
-  final response = await http.get(Uri.parse(
-      'https://api421.herokuapp.com/competencyevaluations/competencyid/4/studentid/18pa1a05b7'));
-  // Use the compute function to run parsePhotos in a separate isolate.
-  // print(s);
-  return parseTableDetails(response.body);
-
-}
-
-
-Future<TableDetailsDataGridSource> getTableDetailsGridSource() async {
-  var competencieslist = await fetchTableDetails();
-  return TableDetailsDataGridSource(competencieslist);
-}
-
-
 class TableDetails {
   String compentencyevaluationid;
   String patientop;
@@ -57,6 +41,20 @@ class TableDetails {
         );
   }
 }
+
+Future<List<TableDetails>> fetchTableDetails() async {
+  final response = await http.get(Uri.parse(
+      'https://api421.herokuapp.com/competencyevaluations/competencyid/4/studentid/18pa1a05b7'));
+  return parseTableDetails(response.body);
+
+}
+
+
+Future<TableDetailsDataGridSource> getTableDetailsGridSource() async {
+  var competencieslist = await fetchTableDetails();
+  return TableDetailsDataGridSource(competencieslist);
+}
+
 
 List<TableDetails> parseTableDetails(String responseBody) {
   final parsedata = jsonDecode(responseBody);
