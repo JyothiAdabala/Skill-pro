@@ -1,17 +1,15 @@
 import 'dart:convert';
+import 'package:firstskillpro/screens/Main_Table.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:http/http.dart' as http;
-import 'package:firstskillpro/screens/faculty/dashboard/id.dart';
-import 'package:firstskillpro/screens/faculty/evaluationForm/eval_form.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import 'package:firstskillpro/screens/faculty/dashboard/get_details.dart';
 import '../../../styling.dart';
-import '../../login/login_controller.dart';
 import 'package:get/get.dart';
 import 'competencies.dart';
 import 'package:firstskillpro/styling.dart';
+// import 'package:firstskillpro/screens/Main_table.dart';
+import 'package:http/http.dart' as http;
 
 class Competencies {
   String name;
@@ -30,6 +28,7 @@ class Competencies {
         required this.competencyname});
 
   factory Competencies.fromJson(Map<String, dynamic> json) {
+    // print(json);
     return Competencies(
         name: json['name'] as String,
         regno: json['regno'] as String,
@@ -102,19 +101,21 @@ List<GridColumn> getColumn() {
   ];
 }
 
+
 class CompetenciesDataGridSource extends DataGridSource {
   CompetenciesDataGridSource(this.competenciesList) {
     buildDataGridRow();
   }
   late List<Competencies> competenciesList;
   late List<DataGridRow> dataGridRows;
-
   @override
   DataGridRowAdapter? buildRow(DataGridRow row) {
     // TODO: implement buildRow
     return DataGridRowAdapter(color: Colors.white, cells: [
       TextButton(
-          onPressed:(){},
+          onPressed:(){
+            Get.to(()=>MainTable());
+          },
           child:Text(
             row.getCells()[0].value,
             style: poppins,
@@ -165,15 +166,15 @@ class Extra extends StatelessWidget {
           title : Text("Competency - ${this.i}"),
           backgroundColor: primaryColor,
         ),
-        body :Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Expanded(
+        body :Padding(
+          padding: EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+            child:Expanded(
                 child:Column(
                   children:<Widget>[
                     FutureBuilder(
                       future: getCompetenciesGridSource(this.i,this.s),
                       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                        print(this.i);
                         print(this.s+"hello");
                         if (snapshot.hasData) {
                           return Flexible(
@@ -191,7 +192,6 @@ class Extra extends StatelessWidget {
                     ),
                   ],
                 )),
-          ],
         ));
   }
 }
