@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -14,30 +15,11 @@ import 'package:firstskillpro/screens/faculty/dashboard/competencydata.dart';
 import 'package:firstskillpro/styling.dart';
 import 'my_globals.dart' as globals;
 
-Future<CompetencyId> fetchIds()  async{
-  final response = await http.get(Uri.parse(
-      'https://api421.herokuapp.com/fdashboard/competencydetails/${globals.tmp}'));
-  final parsed = jsonDecode(response.body).cast<String, dynamic>();
-  return parsed;
-}
-
-class CompetencyId {
-  final String competencyname;
-  final int competencyid;
-
-  CompetencyId({required this.competencyid, required this.competencyname});
-
-  factory CompetencyId.fromJson(Map<String, dynamic> json) {
-    return CompetencyId(
-        competencyname: json['competencyname'],
-        competencyid: json['competencyid']);
-  }
-}
 
 
 Future<List<Competencies>> fetchCompetencies(http.Client client,int i,String s) async {
   final response = await client.get(Uri.parse(
-      'https://api421.herokuapp.com/fdashboard/competencydetails/speciality/surgeon/competencyid/${i}'));
+      'https://api421.herokuapp.com/fdashboard/competencydetails/speciality/${s}/competencyid/${i}'));
   // Use the compute function to run parsePhotos in a separate isolate.
   // print(s);
   return parseCompetencies(response.body);
@@ -63,11 +45,6 @@ class CompetenciesList extends StatefulWidget {
 class _MyAppState extends State<CompetenciesList> {
 
   @override
-  void initState(){
-    fetchIds();
-    super.initState();
-  }
-  @override
   Widget build(BuildContext context) {
 
     return Container(
@@ -80,13 +57,15 @@ class _MyAppState extends State<CompetenciesList> {
               thickness: 2.00,
               color: Colors.black,
             ),
+            // IdDetails(),
+            // sleep(Duration(seconds: 30)),
             Expanded(
                 child: ListView(
                   children: <Widget>[
                     for(int i=0;i<id.length;i++)
                       ElevatedButton(
                           onPressed: (){
-                            Navigator.push(context,MaterialPageRoute(builder: (context) => Extra(key:ObjectKey("extraScreen"),i:id[i],s:globals.tmp)));
+                            Get.to(() => Extra(key:ObjectKey("extraScreen"),i:id[i],s:'surgeon'));
                           },
                           child: Text('Competency ${id[i]}',
                               style: GoogleFonts.poppins(color: Colors.white))),
