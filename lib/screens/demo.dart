@@ -1,23 +1,33 @@
 import 'dart:convert';
 import 'package:firstskillpro/screens/UserModel.dart';
+import 'package:firstskillpro/screens/faculty/evaluationForm/eval_form.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'package:firstskillpro/styling.dart';
 import 'package:syncfusion_flutter_datagrid/datagrid.dart';
-import '../styling.dart';
 
 Future<List<TableDetails>> generateData() async {
-  var data = await http
+  var response = await http
       .get(Uri.parse("https://api421.herokuapp.com/competencyevaluations/competencyid/4/studentid/18pa1a05b7"));
-  var jsonData = json.decode(data.body);
-  print("SecondUri");
-  List<TableDetails> products = [];
-  products = TableDetailsFromJson(data.body);
-
-  return products;
+  return parseTableDetails(response.body);
 }
+
+Future<TableDetailsDataGridSource> getDetailsGridSource() async {
+  var competencieslist = await generateData();
+  return TableDetailsDataGridSource(competencieslist);
+}
+
+List<TableDetails> parseTableDetails(String responseBody) {
+  final parsed = jsonDecode(responseBody).cast<Map<String, dynamic>>();
+  List<TableDetails> patientsList =
+  parsed.map<TableDetails>((json) => TableDetails.fromJson(json)).toList();
+  return patientsList;
+}
+
 List<GridColumn> getColumn() {
   return <GridColumn>[
     GridColumn(
@@ -25,7 +35,6 @@ List<GridColumn> getColumn() {
       columnName: 'PatientOp',
       label: Container(
         color: primaryColor,
-        padding: EdgeInsets.all(8),
         alignment: Alignment.center,
         child: Text('PatientOp',
             style: GoogleFonts.poppins(color: Colors.white)
@@ -83,24 +92,38 @@ class TableDetailsDataGridSource extends DataGridSource {
     // TODO: implement buildRow
     return DataGridRowAdapter(color: Colors.white, cells: [
       Text(
-        row.getCells()[1].value.toString(),
-        style: poppins,
-        // textAlign: TextAlign.center,
-      ),
-      Text(
-        row.getCells()[1].value.toString(),
-        style: poppins,
-        // textAlign: TextAlign.center,
-      ),
-      Text(
-        row.getCells()[2].value.toString(),
-        style: poppins,
+        row.getCells()[0].value.toString(),
         textAlign: TextAlign.center,
+        style: poppins,
+        // textAlign: TextAlign.center,
       ),
       Text(
-        row.getCells()[3].value.toString(),
+        row.getCells()[1].value.toString(),
+        textAlign: TextAlign.center,
         style: poppins,
+
+        // textAlign: TextAlign.center,
       ),
+      TextButton(
+          onPressed:(){
+          },
+          child:Text(
+            row.getCells()[2].value.toString(),
+            style: poppins,
+          )),
+      TextButton(
+          onPressed:(){
+            Get.to(() => EvaluationForm());
+          },
+          child:Text(
+            row.getCells()[3].value.toString(),
+            style: poppins,
+          )),
+      // Text(
+      //   row.getCells()[4].value.toString(),
+      //   style: poppins,
+      //   textAlign: TextAlign.center,
+      // ),
     ]);
   }
 
@@ -110,8 +133,9 @@ class TableDetailsDataGridSource extends DataGridSource {
   void buildTableDataGridRow() {
     dataGridRows = patientsList.map<DataGridRow>((dataGridRow) {
       return DataGridRow(cells: [
-        DataGridCell<String>(columnName: 'RegNo', value: dataGridRow.patientop),
-        DataGridCell<String>(columnName: 'Name', value: dataGridRow.date),
+        DataGridCell<String>(columnName: 'PatientOp', value: dataGridRow.patientop),
+        DataGridCell<String>(columnName: 'Date', value: dataGridRow.date),
+        // DataGridCell<String>(columnName: 'Time', value: dataGridRow.time),
         DataGridCell<int>(columnName: 'Self', value: dataGridRow.self),
         DataGridCell<int>(columnName: 'Faculty', value: dataGridRow.faculty),
       ]);
@@ -134,9 +158,10 @@ class DemoTable extends StatelessWidget {
           child:Expanded(
               child:Column(
                 children:<Widget>[
-                  FutureBuilder(
-                    future: generateData(),
+                  FutureBuilder<TableDetailsDataGridSource>(
+                    future: getDetailsGridSource(),
                     builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                      print("Data from uri");
                       print(snapshot.data);
                       if(snapshot.hasData && snapshot.connectionState == ConnectionState.done){
                         return Flexible(
