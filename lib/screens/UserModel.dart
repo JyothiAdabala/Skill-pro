@@ -1,14 +1,12 @@
 
 import 'dart:convert';
 
-List<TableDetails> TableDetailsFromJson(String str) =>
-    List<TableDetails>.from(json.decode(str).map((x) => TableDetails.fromJson(x)));
+TableDetails tableDetailsFromJson(String str) => TableDetails.fromJson(json.decode(str));
 
-String pTableDetailsToJson(List<TableDetails> data) =>
-    json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String tableDetailsToJson(TableDetails data) => json.encode(data.toJson());
 
 class TableDetails {
-  String compentencyevaluationid;
+  int compentencyevaluationid;
   String patientop;
   String date;
   String time;
@@ -23,17 +21,17 @@ class TableDetails {
         required this.time,
         required this.self,
         required this.faculty,
-        });
+      });
 
   factory TableDetails.fromJson(Map<String, dynamic> json) {
     return TableDetails(
-      compentencyevaluationid : json['compentencyevaluationid'] as String,
-        patientop: json['patientop'] as String,
-        date: json['date'] as String,
-        time: json['time'] as String,
-        self: json['self'] as int,
-        faculty: json['faculty'] as int,
-        );
+      compentencyevaluationid : json['compentencyevaluationid'] as int,
+      patientop: json['patientop'] as String,
+      date: json['date'] as String,
+      time: json['time'] as String,
+      self: json['self'] as int,
+      faculty: json['faculty'] as int,
+    );
   }
   Map<String, dynamic> toJson() => {
 
