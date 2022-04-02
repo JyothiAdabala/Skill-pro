@@ -71,7 +71,7 @@ class _MainTableState extends State<MainTable> {
                       onPressed: () async{
                         final String name = opController.text;
                         createUser(opController.text);
-                        Get.to(()=>DemoTable());
+                        await Get.to(()=>DemoTable());
                         // setState(() {
                         //   _user = user;
                         // });
