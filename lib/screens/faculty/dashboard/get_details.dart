@@ -9,15 +9,16 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:firstskillpro/screens/login/login_controller.dart';
 import 'my_globals.dart' as globals;
 
-Future<Role> fetchRole(String email) async {
+Future<Role> fetchRole(String email)  async{
 
   final response = await http
       .get(Uri.parse('https://api421.herokuapp.com/fdashboard/details/${email}'));
   if (response.statusCode == 200) {
-    return Role.fromJson(json.decode(response.body));
+    return (json.decode(response.body));
   } else {
-    throw Exception('Failed to load album');
+    throw Exception('Failed to load');
   }
+  return(json.decode(response.body));
 }
 
 class Role {
@@ -37,20 +38,27 @@ class Role {
   }
 }
 
-final List<int> ids =[];
+// final List<int> ids =[];
 
-Future fetchIds(String s)  async{
-  final response = await http.get(Uri.parse(
-      'https://api421.herokuapp.com/fdashboard/competencydetails/${s}'));
-  final parsed = json.decode(response.body) as List;
-  for(int i=0;i<parsed.length;i++){
-    ids.add(parsed[i]['competencyid']);
-  }
-  print(s+"AfterAssignment");
-  print(ids);
-  return json.decode(response.body);
-}
-
+// fetchIds(String s) {
+//   final response =  http.get(Uri.parse(
+//       'https://api421.herokuapp.com/fdashboard/competencydetails/${s}'));
+//   print(s+"AfterAssignment");
+//   return(response);
+// }
+//
+// class CompetencyId {
+//   String competencyname;
+//   int competencyid;
+//
+//   CompetencyId({required this.competencyname, required this.competencyid});
+//
+//   factory CompetencyId.fromJson(Map<String, dynamic> json) {
+//     return CompetencyId(
+//         competencyname: json['competencyname'],
+//         competencyid: json['competencyid']);
+//   }
+// }
 
 class DetailWidget extends StatefulWidget {
 
@@ -110,6 +118,7 @@ class _MyAppState extends State<DetailWidget> {
                           builder: (ctx, snapshot) {
                             // Checking if future is resolved or not
                             if (snapshot.connectionState == ConnectionState.done) {
+                              print(snapshot.data?.name);
                               // If we got an error
                               if (snapshot.hasError) {
                                 return Center(
@@ -176,7 +185,7 @@ class _MyAppState extends State<DetailWidget> {
                                     // setState(() {
                                     print(globals.tmp+"BeforeAssignment");
 
-                                      fetchIds(globals.tmp);
+                                      // fetchIds(globals.tmp);
                                     // });
                                     // Future.delayed(Duration.zero, () async {
                                     //   fetchIds(globals.tmp);
